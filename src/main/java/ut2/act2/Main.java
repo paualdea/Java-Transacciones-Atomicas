@@ -53,7 +53,9 @@ public class Main {
 
                     // Si el producto existe y hay suficiente cantidad, entonces llamamos a la función de creación de venta
                     if (bd.existeProducto(objeto, cantidad)) {
-                        bd.nuevaVenta();
+                        //bd.nuevaVenta();
+                        System.out.println("creando venta....");
+                        espera(3000);
                     } else {
                         System.out.println("\nEl producto no existe");
                         espera(0);

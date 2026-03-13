@@ -11,25 +11,20 @@ public class Bd {
      * Función constructora de la clase, que sirve para crear o identificar las tablas de la BD
      */
     public Bd () {
-        // Creamos la sentencia para crear la TABLA productos en la BD
-        String productos = "CREATE TABLE PRODUCTOS(id_producto INTEGER PRIMARY KEY AUTOINCREMENT, nombre VARCHAR(100), stock INTEGER);";
-        String ventas = "CREATE TABLE VENTAS(id_venta INTEGER PRIMARY KEY AUTOINCREMENT, id_producto INTEGER, unidades INTEGER, fecha DATE, FOREIGN KEY(id_producto) REFERENCES PRODUCTOS(id_producto));";
-        String datos = """
-            INSERT INTO PRODUCTOS VALUES ('Escoba', 3);
-            INSERT INTO PRODUCTOS VALUES ('Cubo metálico', 5);
-            INSERT INTO PRODUCTOS VALUES ('Cuerda', 4);
-        """;
-
-        // Implementamos un try-with-resources para no desperdiciar recursos
+       // Implementamos un try-with-resources para no desperdiciar recursos
         try (Connection c = DriverManager.getConnection(url);
-             PreparedStatement ps = c.prepareStatement(productos);
-             PreparedStatement ps2 = c.prepareStatement(ventas);
-             PreparedStatement ps3 = c.prepareStatement(datos))
+            Statement st = c.createStatement())
         {
-            // Ejecutamos la creación de las tablas y la introducción de datos siguiendo las sentencias
-            ps.executeUpdate();
-            ps2.executeUpdate();
-            ps3.executeUpdate();
+            // Creamos las tablas PRODUCTOS y VENTAS
+            st.executeUpdate("DROP TABLE IF EXISTS PRODUCTOS");
+            st.executeUpdate("CREATE TABLE PRODUCTOS(id_producto INTEGER PRIMARY KEY AUTOINCREMENT, nombre VARCHAR(100), stock INTEGER)");
+            st.executeUpdate("DROP TABLE IF EXISTS VENTAS");
+            st.executeUpdate("CREATE TABLE VENTAS(id_venta INTEGER PRIMARY KEY AUTOINCREMENT, id_producto INTEGER, unidades INTEGER, fecha DATE, FOREIGN KEY(id_producto) REFERENCES PRODUCTOS(id_producto))");
+
+            // Metemos los datos
+            st.executeUpdate("INSERT INTO PRODUCTOS (nombre, stock) VALUES ('Escoba', 3)");
+            st.executeUpdate("INSERT INTO PRODUCTOS (nombre, stock) VALUES ('Cubo metálico', 5)");
+            st.executeUpdate("INSERT INTO PRODUCTOS (nombre, stock) VALUES ('Cuerda', 4)");
         }
         // En caso de que falle la conexión a la BD, controlamos la excepción (SQLException)
         catch (SQLException e) {
@@ -84,7 +79,7 @@ public class Bd {
         ) {
             // Bindeamos los datos a las sentencias y ejecutamos el ResultSet
             ps.setInt(1, id);
-            ps2.setInt(1,cantidad);
+            ps2.setInt(1, id);
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
