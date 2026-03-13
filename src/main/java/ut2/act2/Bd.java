@@ -16,7 +16,7 @@ public class Bd {
     public Bd () {
         // Creamos la sentencia para crear la TABLA productos en la BD
         String productos = "CREATE TABLE IF NOT EXISTS PRODUCTOS(id_producto INTEGER PRIMARY KEY AUTOINCREMENT, nombre VARCHAR(100), stock INTEGER);";
-        String ventas = "CREATE TABLE IF NOT EXISTS VENTAS(id_venta INTEGER PRIMARY KEY AUTOINCREMENT, unidades INTEGER, fecha DATE, FOREIGN KEY(id_producto) REFERENCES PRODUCTOS(id_producto));";
+        String ventas = "CREATE TABLE IF NOT EXISTS VENTAS(id_venta INTEGER PRIMARY KEY AUTOINCREMENT, id_producto INTEGER, unidades INTEGER, fecha DATE, FOREIGN KEY(id_producto) REFERENCES PRODUCTOS(id_producto));";
 
         // Implementamos un try-with-resources para no desperdiciar recursos
         try (Connection c = DriverManager.getConnection(url);
