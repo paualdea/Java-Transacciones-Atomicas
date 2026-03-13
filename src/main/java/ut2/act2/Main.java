@@ -18,7 +18,7 @@ public class Main {
         // Mientras que salir sea false, seguir el bucle while
         while (!salir) {
             limpiarPantalla();
-            System.out.print("\t\t.:TIENDA DB:.\n\n1. Crear venta\n2. Añadir stock\n3. Resetear BD\n4. Salir\nOpción: ");
+            System.out.print("\t\t.:TIENDA DB:.\n\n1. Crear venta\n2. Añadir stock\n3. Salir\n\nOpción: ");
 
             try {
                 opcion = sc.nextInt();
@@ -32,20 +32,44 @@ public class Main {
 
             switch (opcion) {
                 case 1:
+                    int objeto = 0, cantidad = 0;
+
+                    limpiarPantalla();
+
+                    System.out.println("\t\t.:CREAR VENTA:.\n");
+                    bd.listadoProductos();
+
+                    // Recogemos el producto y la cantidad de la venta
+                    try {
+                        System.out.print("\nNumero producto: ");
+                        objeto = sc.nextInt();
+                        System.out.println("Cantidad: ");
+                        cantidad = sc.nextInt();
+                    } catch (Exception e) {
+                        sc.nextLine();
+                        System.err.println("Opción incorrecta");
+                        espera(0);
+                    }
+
+                    // Si el producto existe y hay suficiente cantidad, entonces llamamos a la función de creación de venta
+                    if (bd.existeProducto(objeto, cantidad)) {
+                        bd.nuevaVenta();
+                    } else {
+                        System.out.println("\nEl producto no existe");
+                        espera(0);
+                    }
 
                     break;
                 case 2:
 
                     break;
                 case 3:
-
-                    break;
-                case 4:
                     // Ponemos salir en true para romper el bucle while
                     salir = true;
                     break;
                 default:
-
+                    System.err.println("Opción incorrecta\n");
+                    espera(0);
                     break;
             }
         }
