@@ -40,4 +40,4 @@ El proyecto utiliza la base de datos `tiendaDB` con las siguientes tablas relaci
 Para ejecutar este programa, es necesario descargar el código fuente o el .jar de las releases.
 
 ---
-Este proyecto sirve como evidencia del aprendizaje sobre el control de transacciones y la integridad referencial en entornos Java, de la asignatura ****
+Este proyecto sirve como evidencia del aprendizaje sobre el control de transacciones y la integridad referencial en entornos Java, de la asignatura **Acceso a Datos**.
