@@ -119,13 +119,13 @@ public class Bd {
         boolean existe = false;
         // Contamos el número de usuarios con ese ID (1)
         String sentencia = "SELECT count(*) FROM PRODUCTOS WHERE id_producto = ?;";
-        // Obtenemos el numero real de stock del producto
+        // Obtenemos el número real de stock del producto
         String sentencia2 = "SELECT stock FROM PRODUCTOS WHERE id_producto = ?;";
 
         // Estructura try-with-resources
         try (Connection c = DriverManager.getConnection(url);
              PreparedStatement ps = c.prepareStatement(sentencia);
-             PreparedStatement ps2 = c.prepareStatement(sentencia2);
+             PreparedStatement ps2 = c.prepareStatement(sentencia2)
         ) {
             // Bindeamos los datos a las sentencias y ejecutamos el ResultSet
             ps.setInt(1, id);
