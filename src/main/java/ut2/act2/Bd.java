@@ -30,10 +30,60 @@ public class Bd {
         catch (SQLException e) {
             // Mandamos el error usando System.err para no ensuciar la salida
             System.err.println("Error SQL: " + e.getMessage());
+            Main.espera(0);
         }
     }
 
+    /**
+     * Función para crear una venta cómo transacción indivisible
 
+     * @param id
+     * Recibimos el ID del producto a vender
+     * @param cantidad
+     * Recibimos la cantidad del producto a vender
+     */
+    public void nuevaVenta (int id, int cantidad) {
+        // Creamos la sentencia que crea la venta, añadiendo la fecha con date('now')
+        String venta = "INSERT INTO VENTAS (id_producto, unidades, fecha) VALUES (?, ?, date('now'));";
+        // Creamos la sentencia que actualiza el stock tras hacer la venta
+        String stock = "UPDATE PRODUCTOS SET stock = stock - ? WHERE id_producto = ?;";
+
+        // Crearemos un try-with-resoures anidado, donde primero desactivamos el auto-commit para evitar inserciones peligrosas
+        try (Connection c = DriverManager.getConnection(url)) {
+            // Desactivamos auto-commit
+            c.setAutoCommit(false);
+
+            // Creamos try-with-resources anidado
+            try (PreparedStatement psVenta = c.prepareStatement(venta);
+                PreparedStatement psStock = c.prepareStatement(stock))
+            {
+                // Bindeamos los valores a la sentencia de venta
+                psVenta.setInt(1, id);
+                psVenta.setInt(2, cantidad);
+                psVenta.executeUpdate();
+
+                // Bindeamos los valores a la sentencia del stock
+                psStock.setInt(1, cantidad);
+                psStock.setInt(2, id);
+                psStock.executeUpdate();
+
+                // Si llegamos aquí sin errores, podemos confirmar la transacción manualmente
+                c.commit();
+                System.out.println("\nTransacción indivisible completada");
+                Main.espera(3000);
+            }
+            // En caso de que falle la transacción indivisible, cancelamos...
+            catch (SQLException e) {
+                System.err.println("\nError en la venta, deshaciendo...");
+                // Hacemos un rollback() para revertir la inserción peligrosa (en caso de haberse completado)
+                c.rollback();
+                Main.espera(3000);
+            }
+        } catch (SQLException e) {
+            System.err.println("Error SQL: " + e.getMessage());
+            Main.espera(0);
+        }
+    }
 
     /**
      * Esta función imprime por pantalla todos los productos y cantidades que hay, usando la tabla PRODUCTOS
@@ -48,7 +98,7 @@ public class Bd {
              ResultSet rs = ps.executeQuery())
         {
             while(rs.next()){
-                System.out.println("ID: " + rs.getInt(1) + " - " + rs.getString(2) + ". " + rs.getInt(3) + "unidades");
+                System.out.println("ID " + rs.getInt(1) + " - " + rs.getString(2) + ", " + rs.getInt(3) + " unidades");
                 numeroProductos++;
             }
             System.out.println("\n " + numeroProductos + " productos");
@@ -87,7 +137,7 @@ public class Bd {
                 ResultSet rs2 = ps2.executeQuery();
 
                 // Si hay 1 usuario con ese ID y hay la suficiente cantidad demandada, entonces...
-                if (rs.getInt(1) > 0 && rs2.getInt(1) >= cantidad) {
+                if (rs.getInt(1) > 0 && (cantidad > 0 && rs2.getInt(1) >= cantidad)) {
                     existe = true;
                 }
                 // Si existe, pero no hay suficiente cantidad, entonces...
